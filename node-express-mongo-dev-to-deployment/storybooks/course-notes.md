@@ -165,3 +165,9 @@ In this chapter, we will implement mongoose and connect our MongoDB Atlas dev da
 
             // Create collection and add schema
             mongoose.model('users', UserSchema);
+
+---
+
+SECTION 7-44: SAVING THE AUTHENTICATED USER
+
+In this section we are going to take some of the user profile info and we put them into database.
