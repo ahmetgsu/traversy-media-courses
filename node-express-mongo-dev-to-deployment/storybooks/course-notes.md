@@ -21,3 +21,55 @@
 
    // Use Routes
    app.use('/auth', auth);
+
+---
+
+IMPLEMENTING THE STRATEGY
+
+1.  In config folder, create a passport.js file in which we will define our strategy and write initial codes as follows:
+
+        const GoogleStrategy = require('passport-google-oauth20').Strategy;
+        const mongoose = require("mongoose");
+        const keys = require("./keys");
+
+        module.exports = function(passport) {
+
+        }
+
+2.  In the app.js, we need to require passport.js file
+
+    const passport = require('passport');
+
+        // Passport Config
+        require('./config/passport')(passport);
+
+3.  Then, we gonna define a strategy in passport.js
+
+         module.exports = function(passport) {
+           passport.use(
+             new GoogleStrategy(
+               {
+                 clientID: keys.googleClientID,
+                 clientSecret: keys.googleClientSecret,
+                 callbackURL: '/auth/google/callback',
+                 proxy: true
+               },
+               (accessToken, refreshToken, profile, done) => {
+                 console.log(accessToken);
+                 console.log(profile);
+               }
+             )
+           );
+         };
+
+we added "proxy: true" beacuse heroku deploys with "https" and this will prevent us to get error
+
+4.  In the auth.js, we will import passport
+
+         const passport = require('passport');
+
+         // As we're in auth.js file /google will lead us to /auth/google route
+         router.get(
+           '/google',
+           passport.authenticate('google', { scope: ['profile', 'email'] })
+         );
