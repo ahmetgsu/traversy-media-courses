@@ -171,3 +171,82 @@ In this chapter, we will implement mongoose and connect our MongoDB Atlas dev da
 SECTION 7-44: SAVING THE AUTHENTICATED USER
 
 In this section we are going to take some of the user profile info and we put them into database.
+
+1.  In passport.js, we create a newUser object variable in which we have all info we want to save into database
+
+            const image = profile.photos[0].value;
+
+            const newUser = {
+              googleID: profile.id,
+              firstName: profile.name.givenName,
+              lastName: profile.name.familyName,
+              email: profile.emails[0].value,
+              image: image
+            };
+
+2.  Then, we check if the user exist in database or not
+
+            // Check for existing user
+                    User.findOne({
+                      googleID: profile.id
+                    }).then(user => {
+                      if (user) {
+                        // Return user
+                        done(null, user);
+                      } else {
+                        // Create user
+                        new User(newUser).save().then(user => done(null, user));
+                      }
+
+3.  If user exist in db, it returns the existing user, if not, it creates a new user, saves it into db and then return it.
+
+4.  In app.js, we need to load the user model:
+
+              // Load user model
+              require('./models/User');
+
+---
+
+SECTION 7-45: ADDING SESSION AND AUTHENTICATION
+
+In this section we will add the rest of the things to passport.js to actually work and to authenticate.
+
+In passportjs.org/docs/ we have the following information about sessions:
+
+Sessions
+In a typical web application, the credentials used to authenticate a user will only be transmitted during the login request. If authentication succeeds, a session will be established and maintained via a cookie set in the user's browser.
+
+Each subsequent request will not contain credentials, but rather the unique cookie that identifies the session. In order to support login sessions, Passport will serialize and deserialize user instances to and from the session.
+
+passport.serializeUser(function(user, done) {
+done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+User.findById(id, function(err, user) {
+done(err, user);
+});
+});
+
+In this example, only the user ID is serialized to the session, keeping the amount of data stored within the session small. When subsequent requests are received, this ID is used to find the user, which will be restored to req.user.
+
+The serialization and deserialization logic is supplied by the application, allowing the application to choose an appropriate database and/or object mapper, without imposition by the authentication layer.
+
+1.  Serialize User: in passport.js, at the bottom of module.exports we add the following codes:
+
+              passport.serializeUser((user, done) => {
+                done(null, user.id);
+              });
+
+2.  Deserialize User:
+
+              passport.deserializeUser((id, done) => {
+                User.findById(id).then(user => done(null, user));
+              });
+
+3.  In app.js we need to add passport middleware:
+    In a Connect or Express-based application, passport.initialize() middleware is required to initialize Passport. If your application uses persistent login sessions, passport.session() middleware must also be used.
+
+              // Passport middleware
+              app.use(passport.initialize());
+              app.use(passport.session());
