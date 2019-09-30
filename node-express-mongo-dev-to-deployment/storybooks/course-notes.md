@@ -73,3 +73,44 @@ we added "proxy: true" beacuse heroku deploys with "https" and this will prevent
            '/google',
            passport.authenticate('google', { scope: ['profile', 'email'] })
          );
+
+---
+
+In section 41, we set up google strategy in passport.js file and we are able to go /auth/google route. But as we do not have our callback function we get an error message as follows in the /auth/google route after logged in: Cannot GET /auth/google/callback.
+
+Normally we need to have a callback function as defined in the passport-google-oauth20 web site
+
+          app.get('/auth/google/callback',
+            passport.authenticate('google', { failureRedirect: '/login' }),
+            function(req, res) {
+              // Successful authentication, redirect home.
+              res.redirect('/');
+            });
+
+In section 42, we will be dealing with this callback function.
+
+1.  In auth.js, we paste the code below and modify a bit
+
+           router.get(
+             '/google/callback',
+             passport.authenticate('google', { failureRedirect: '/' }),
+             (req, res) => {
+               // Successful authentication, redirect dashboard.
+               res.redirect('/dashboard');
+             }
+           );
+
+2.  In passport.js, we have written console.log for accessToken and profile. When we try to sign-in we get those information in console. We will use mongoose to take profile information and format it in a way that we want and insert it into mangoose. In order to do that, we need to create mongoose module.
+
+3.  We deployed our changes to heroku.
+    git add .
+    git commit -am "handled auth"
+    git push heroku master
+
+4.  We then go to heroku app and open up the application. We try to go the link: https://agile-inlet-11133.herokuapp.com/auth/google. But it gives an error. Because we've solely added http://localhost:5000 to Authorized JavaScript origins section.
+
+        4.1 First, in console.developers.google.com we select the storybooks project on top left side. Then, in the left side bar we go to OAUth consent screen to add "agile-inlet-11133.herokuapp.com" link to Authorized domains.
+
+        4.2 After that, select Credentials and click on "Web client 1" underneath of the Credentials. Then, we add https://agile-inlet-11133.herokuapp.com to Authorized JavaScript origins.
+
+        4.3 On the other hand, we must add https://agile-inlet-11133.herokuapp.com/auth/google/callback to Authorized redirect URIs section
