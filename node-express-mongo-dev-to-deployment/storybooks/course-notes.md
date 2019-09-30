@@ -114,3 +114,54 @@ In section 42, we will be dealing with this callback function.
         4.2 After that, select Credentials and click on "Web client 1" underneath of the Credentials. Then, we add https://agile-inlet-11133.herokuapp.com to Authorized JavaScript origins.
 
         4.3 On the other hand, we must add https://agile-inlet-11133.herokuapp.com/auth/google/callback to Authorized redirect URIs section
+
+---
+
+SECTION 7-43: CREATING THE USER MODEL
+
+In this chapter, we will implement mongoose and connect our MongoDB Atlas dev database(db) and create a user model
+
+1.  In app.js, we brought mongoose but we've not connected yet. So, we'll do that. But first we need to bring (load) the keys in app.js file.
+
+          // Load Keys
+          const keys = require('./config/keys');
+
+2.  Then, we connect mongoose as follows:
+
+          // Mongoose Connect
+          mongoose
+            .connect(keys.mongoURI, {
+              useNewUrlParser: true,
+              useUnifiedTopology: true
+            })
+            .then(() => console.log('MongoDB connected'))
+            .catch(err => console.log(err));
+
+3.  We create "models" folder in root directory and inside of it we create User.js file.
+
+            const mongoose = require('mongoose');
+            const Schema = mongoose.Schema;
+
+            // Create Schema
+            const UserSchema = new Schema({
+              googleID: {
+                type: String,
+                required: true
+              },
+              email: {
+                type: String,
+                required: true
+              },
+              firstName: {
+                type: String
+              },
+              lastName: {
+                type: String
+              },
+              image: {
+                type: String
+              }
+            });
+
+            // Create collection and add schema
+            mongoose.model('users', UserSchema);
