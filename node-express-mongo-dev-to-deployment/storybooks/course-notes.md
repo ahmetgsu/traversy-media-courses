@@ -250,3 +250,30 @@ The serialization and deserialization logic is supplied by the application, allo
               // Passport middleware
               app.use(passport.initialize());
               app.use(passport.session());
+
+---
+
+SECTION 8-46: INDEX ROUTES AND HANDLEBARS
+
+We'll shorten the code in app.js. First, in routes folder, we create a file named index.js.
+
+1.  In index.js, we set up the initial configuration as follows:
+
+              const express = require('express');
+              const router = express.Router();
+
+              router.get('/', (req, res) => {
+                res.send('It works');
+              });
+
+              module.exports = router;
+
+2.  Then, in app.js we first load the index route on top and use it at the bottom.
+
+3.  we install our view engine: npm i --save express-handlebars
+
+4.  As ususal, we have to bring it in app.js on the top of the file
+
+              const exphbs = require('express-handlebars');
+
+5.  We need to add middleware for handlebars.
