@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import AlertContext from '../../context/alert/alertContext';
 
 const Register = () => {
+  const alertContext = useContext(AlertContext);
+
+  const { setAlert } = alertContext;
+
   const [user, setUser] = useState({
     name: '',
     email: '',
@@ -14,18 +19,18 @@ const Register = () => {
 
   const onSubmit = e => {
     e.preventDefault();
-    console.log('Register submit');
-    // if (name === '' || email === '' || password === '') {
-    //   setAlert('Please enter all fields', 'danger');
-    // } else if (password !== password2) {
-    //   setAlert('Passwords do not match', 'danger');
-    // } else {
-    //   register({
-    //     name,
-    //     email,
-    //     password
-    //   });
-    // }
+    if (name === '' || email === '' || password === '') {
+      setAlert('Please enter all fields', 'danger');
+    } else if (password !== password2) {
+      setAlert('Passwords do not match', 'danger');
+    } else {
+      console.log('Register submit');
+      // register({
+      //   name,
+      //   email,
+      //   password
+      // });
+    }
   };
 
   return (
@@ -41,7 +46,7 @@ const Register = () => {
             name='name'
             value={name}
             onChange={onChange}
-            required
+            // required
           />
         </div>
         <div className='form-group'>
@@ -51,7 +56,7 @@ const Register = () => {
             name='email'
             value={email}
             onChange={onChange}
-            required
+            // required
           />
         </div>
         <div className='form-group'>
@@ -61,7 +66,7 @@ const Register = () => {
             name='password'
             value={password}
             onChange={onChange}
-            required
+            // required
             minLength='6'
           />
         </div>
@@ -72,7 +77,7 @@ const Register = () => {
             name='password2'
             value={password2}
             onChange={onChange}
-            required
+            // required
             minLength='6'
           />
         </div>
